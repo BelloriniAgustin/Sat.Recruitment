@@ -6,47 +6,55 @@ namespace Sat.Recruitment.Helpers
 {
     public static class Validator
     {
-        public static bool IsValidUser(string name, string email, string address, string phone, ref string errors)
+        public static bool IsValidUser(User user, ref string errors)
         {
-            if (name == null)
+            if (string.IsNullOrEmpty(user.Name))
+            {
                 //Validate if Name is null
                 errors = "The name is required";
                 return false;
-            if (email == null)
+            }
+            if (string.IsNullOrEmpty(user.Email))
+            {
                 //Validate if Email is null
-                errors = errors + " The email is required";
+                errors = " The email is required";
                 return false;
-            if (address == null)
+            }
+            if (string.IsNullOrEmpty(user.Address))
+            {
                 //Validate if Address is null
-                errors = errors + " The address is required";
+                errors = " The address is required";
                 return false;
-            if (phone == null)
+            }
+            if (string.IsNullOrEmpty(user.Phone))
+            {
                 //Validate if Phone is null
-                errors = errors + " The phone is required";
+                errors = " The phone is required";
                 return false;
+            }
+
             return true;
         }
 
-        public static bool IsDuplicatedUser(string name, string email, string address, string phone, List<User> users, ref string errors)
+        public static bool IsDuplicatedUser(User newUser, List<User> users, ref string errors)
         {
             foreach (var user in users)
             {
-                if (user.Email == email
+                if (user.Email == Utils.NormalizeEmail(newUser.Email)
                     ||
-                    user.Phone == phone)
+                    user.Phone == newUser.Phone)
                 {
                     errors = "User is duplicated";
                     return true;
                 }
-                else if (user.Name == name)
+                else if (user.Name == newUser.Name)
                 {
-                    if (user.Address == address)
+                    if (user.Address == newUser.Address)
                     {
                         errors = "User is duplicated";
 
                         return true;
                     }
-
                 }
             }
 

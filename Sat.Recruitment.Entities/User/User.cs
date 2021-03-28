@@ -2,7 +2,7 @@
 
 namespace Sat.Recruitment.Entities
 {
-    public class User
+    public abstract class User
     {
         public string Name { get; set; }
 
@@ -15,5 +15,14 @@ namespace Sat.Recruitment.Entities
         public string UserType { get; set; }
         
         public decimal Money { get; set; }
+
+        public void ApplyGift()
+        {
+            var percentageToApply = GetGiftPercentage();
+            var gift = Money * Convert.ToDecimal(percentageToApply);
+            Money += gift;
+        }
+
+        protected abstract double GetGiftPercentage();
     }
 }

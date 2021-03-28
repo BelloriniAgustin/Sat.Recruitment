@@ -1,13 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Net;
 
 namespace Sat.Recruitment.Entities
 {
     public class ApiResponse
     {
-        public bool IsSuccess { get; set; }
+        public HttpStatusCode StatusCode { get; set; }
 
-        public string Errors { get; set; }
+        public string Message { get; set; }
     }
 }

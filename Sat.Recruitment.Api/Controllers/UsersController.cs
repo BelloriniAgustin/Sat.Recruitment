@@ -1,11 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 using Sat.Recruitment.Entities;
 using Sat.Recruitment.Helpers;
+using Sat.Recruitment.Helpers.UserFactory;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Threading.Tasks;
+using System.Net;
 
 namespace Sat.Recruitment.Api.Controllers
 {
@@ -22,91 +21,61 @@ namespace Sat.Recruitment.Api.Controllers
 
         [HttpPost]
         [Route("/users")]
-        public async Task<ApiResponse> CreateUser(string name, string email, string address, string phone, string userType, string money)
+        public ApiResponse CreateUser(User user)
         {
             try
             {
-                var errors = "";
+                var responseMessage = "";
 
-                if (!Validator.IsValidUser(name, email, address, phone, ref errors))
+                if (!Validator.IsValidUser(user, ref responseMessage))
                 {
                     return new ApiResponse()
                     {
-                        IsSuccess = false,
-                        Errors = string.IsNullOrEmpty(errors) ? "Ivalid user" : errors
+                        StatusCode = HttpStatusCode.BadRequest,
+                        Message = string.IsNullOrEmpty(responseMessage) ? "Ivalid user" : responseMessage
                     };
                 }
 
-                if (Validator.IsDuplicatedUser(name, Utils.NormalizeEmail(email), address, phone, _users, ref errors))
+                if (Validator.IsDuplicatedUser(user, _users, ref responseMessage))
                 {
                     return new ApiResponse()
                     {
-                        IsSuccess = false,
-                        Errors = String.IsNullOrEmpty(errors) ? "Duplicated user" : errors
+                        StatusCode = HttpStatusCode.BadRequest,
+                        Message = string.IsNullOrEmpty(responseMessage) ? "Duplicated user" : responseMessage
                     };
                 }
 
-                var newUser = new User
-                {
-                    Name = name,
-                    Email = email,
-                    Address = address,
-                    Phone = phone,
-                    UserType = userType,
-                    Money = decimal.Parse(money)
-                };
+                User newUser = null;
 
-                if (newUser.UserType == "Normal")
+                switch (user.UserType)
                 {
-                    if (decimal.Parse(money) > 100)
-                    {
-                        var percentage = Convert.ToDecimal(0.12);
-                        //If new user is normal and has more than USD100
-                        var gif = decimal.Parse(money) * percentage;
-                        newUser.Money = newUser.Money + gif;
-                    }
-                    if (decimal.Parse(money) < 100)
-                    {
-                        if (decimal.Parse(money) > 10)
-                        {
-                            var percentage = Convert.ToDecimal(0.8);
-                            var gif = decimal.Parse(money) * percentage;
-                            newUser.Money = newUser.Money + gif;
-                        }
-                    }
+                    case "Normal":
+                        newUser = new NormalFactory().CreateUser(user.Name, user.Email, user.Phone, user.Address, user.UserType, user.Money);
+                        break;
+                    case "SuperUser":
+                        newUser = new SuperUserFactory().CreateUser(user.Name, user.Email, user.Phone, user.Address, user.UserType, user.Money);
+                        break;
+                    case "Premium":
+                        newUser = new PremiumFactory().CreateUser(user.Name, user.Email, user.Phone, user.Address, user.UserType, user.Money);
+                        break;
+                    default:
+                        throw new ArgumentException("Invalid type", user.UserType);
                 }
-                if (newUser.UserType == "SuperUser")
-                {
-                    if (decimal.Parse(money) > 100)
-                    {
-                        var percentage = Convert.ToDecimal(0.20);
-                        var gif = decimal.Parse(money) * percentage;
-                        newUser.Money = newUser.Money + gif;
-                    }
-                }
-                if (newUser.UserType == "Premium")
-                {
-                    if (decimal.Parse(money) > 100)
-                    {
-                        var gif = decimal.Parse(money) * 2;
-                        newUser.Money = newUser.Money + gif;
-                    }
-                }
+
+                newUser.ApplyGift();
 
                 return new ApiResponse()
                 {
-                    IsSuccess = true,
-                    Errors = "User successfully created" //TODO
+                    StatusCode = HttpStatusCode.OK,
+                    Message = "User successfully created"
                 };
             }
-            catch
+            catch (Exception exception)
             {
-                Debug.WriteLine("The user is duplicated"); //TODO
-
                 return new ApiResponse()
                 {
-                    IsSuccess = false,
-                    Errors = "The user is duplicated" //TODO
+                    StatusCode = HttpStatusCode.InternalServerError,
+                    Message = exception.Message
                 };
             }
         }
