@@ -2,7 +2,6 @@
 using Newtonsoft.Json.Schema;
 using Sat.Recruitment.Entities;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 
 namespace Sat.Recruitment.Helpers
@@ -16,7 +15,7 @@ namespace Sat.Recruitment.Helpers
 
         public static bool UserHasValidProperties(UserDTO userDTO, ref string errors)
         {
-            var userSchema = Utils.ReadFile("/Files/UserSchema.json");
+            var userSchema = Utils.ReadFile(Constants.UsersJsonSchemaPath);
             var user = JObject.FromObject(userDTO);
 
             if (!user.IsValid(JSchema.Parse(userSchema), out IList<string> errorMessages))
@@ -32,7 +31,7 @@ namespace Sat.Recruitment.Helpers
         {
             if (users.Any(user => user.Equals(newUser)))
             {
-                errors = "User is duplicated";
+                errors = Constants.DuplicatedUserErrorMessage;
                 return true;
             }
 

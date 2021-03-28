@@ -1,10 +1,10 @@
 ﻿using Sat.Recruitment.Entities;
 
-namespace Sat.Recruitment.Helpers.UserFactory
+namespace Sat.Recruitment.Helpers.UserFactories
 {
     public class PremiumFactory : UserFactory
     {
-        public override User CreateUser(UserDTO user)
+        public override User CreateConcreteUser(UserDTO user)
         {
             return new Premium() 
             {

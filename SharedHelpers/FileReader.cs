@@ -1,9 +1,7 @@
 ﻿using Sat.Recruitment.Entities;
-using Sat.Recruitment.Helpers.UserFactory;
-using System;
+using Sat.Recruitment.Helpers.UserFactories;
 using System.Collections.Generic;
 using System.IO;
-using System.Threading.Tasks;
 
 namespace Sat.Recruitment.Helpers
 {
@@ -13,7 +11,7 @@ namespace Sat.Recruitment.Helpers
         {
             var users = new List<UserDTO>();
 
-            var path = Directory.GetCurrentDirectory() + "/Files/Users.txt";
+            var path = Directory.GetCurrentDirectory() + Constants.UsersFilePath;
 
             var fileStream = new FileStream(path, FileMode.Open);
 
@@ -33,20 +31,7 @@ namespace Sat.Recruitment.Helpers
                     Money = decimal.Parse(line[5].ToString())
                 };
 
-                switch (userDTO.UserType)
-                {
-                    case "Normal":
-                        users.Add(new NormalFactory().CreateUser(userDTO));
-                        break;
-                    case "SuperUser":
-                        users.Add(new SuperUserFactory().CreateUser(userDTO));
-                        break;
-                    case "Premium":
-                        users.Add(new PremiumFactory().CreateUser(userDTO));
-                        break;
-                    default:
-                        throw new ArgumentException("Invalid type", userDTO.UserType);
-                }
+                users.Add(UserFactory.CreateUser(userDTO));
             }
 
             reader.Close();

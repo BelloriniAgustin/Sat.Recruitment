@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Sat.Recruitment.Entities;
 using Sat.Recruitment.Helpers;
-using Sat.Recruitment.Helpers.UserFactory;
+using Sat.Recruitment.Helpers.UserFactories;
 using System;
 using System.Collections.Generic;
 using System.Net;
@@ -33,26 +33,18 @@ namespace Sat.Recruitment.Api.Controllers
                     return new ApiResponse()
                     {
                         StatusCode = HttpStatusCode.BadRequest,
-                        Message = string.IsNullOrEmpty(responseMessage) ? "Ivalid user" : responseMessage
+                        Message = string.IsNullOrEmpty(responseMessage) ? Constants.InvalidUserDefaultMessage : responseMessage
                     };
                 }
 
-                User newUser = null;
-
-                newUser = user.UserType switch
-                {
-                    "Normal" => new NormalFactory().CreateUser(user),
-                    "SuperUser" => new SuperUserFactory().CreateUser(user),
-                    "Premium" => new PremiumFactory().CreateUser(user),
-                    _ => throw new ArgumentException("Invalid type", user.UserType),
-                };
+                var newUser = UserFactory.CreateUser(user);
 
                 newUser.ApplyGift();
 
                 return new ApiResponse()
                 {
                     StatusCode = HttpStatusCode.OK,
-                    Message = "User successfully created"
+                    Message = Constants.SuccessUserCreationMessage
                 };
             }
             catch (Exception exception)
