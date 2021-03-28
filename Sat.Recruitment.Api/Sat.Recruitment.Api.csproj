@@ -2,7 +2,18 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
+    <StartupObject>Sat.Recruitment.Api.Program</StartupObject>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Content Remove="Files\UserSchema.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="Files\UserSchema.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Swashbuckle.AspNetCore" Version="5.6.3" />

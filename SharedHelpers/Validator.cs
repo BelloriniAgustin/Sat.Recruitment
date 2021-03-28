@@ -8,7 +8,7 @@ namespace Sat.Recruitment.Helpers
 {
     public static class Validator
     {
-        public static bool IsValidUser(UserDTO user, List<UserDTO> users, ref string errors)
+        public static bool IsValidUser(UserDTO user, IList<UserDTO> users, ref string errors)
         {
             return UserHasValidProperties(user, ref errors) && !IsDuplicatedUser(user, users, ref errors);
         }
@@ -24,10 +24,12 @@ namespace Sat.Recruitment.Helpers
                 return false;
             }
 
+            userDTO.Email = Utils.NormalizeEmail(userDTO.Email);
+
             return true;
         }
 
-        public static bool IsDuplicatedUser(UserDTO newUser, List<UserDTO> users, ref string errors)
+        public static bool IsDuplicatedUser(UserDTO newUser, IList<UserDTO> users, ref string errors)
         {
             if (users.Any(user => user.Equals(newUser)))
             {

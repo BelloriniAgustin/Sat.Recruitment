@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Sat.Recruitment.Entities;
+using Sat.Recruitment.Helpers.Exceptions;
+using System;
 using System.IO;
 
 namespace Sat.Recruitment.Helpers
@@ -7,28 +9,44 @@ namespace Sat.Recruitment.Helpers
     {
         public static string NormalizeEmail(string emailToNormalize)
         {
-            var aux = emailToNormalize.Split(new char[] { '@' }, StringSplitOptions.RemoveEmptyEntries);
+            try
+            {
+                var aux = emailToNormalize.Split(new char[] { '@' }, StringSplitOptions.RemoveEmptyEntries);
 
-            var atIndex = aux[0].IndexOf("+", StringComparison.Ordinal);
+                aux[0] = aux[0].Replace(".", "");
 
-            aux[0] = atIndex < 0 ? aux[0].Replace(".", "") : aux[0].Replace(".", "").Remove(atIndex);
+                var atIndex = aux[0].IndexOf("+", StringComparison.Ordinal);
 
-            return string.Join("@", new string[] { aux[0], aux[1] });
+                aux[0] = atIndex > 0 ? aux[0].Remove(atIndex) : aux[0];
+
+                return string.Join("@", aux);
+            }
+            catch (Exception exception)
+            {
+                throw new UtilsExceptions(Constants.NormalizeEmailErrorMessage, exception);
+            }
         }
 
         public static string ReadFile(string schemaPath)
         {
-            var path = Directory.GetCurrentDirectory() + schemaPath;
+            try
+            {
+                var path = Directory.GetCurrentDirectory() + schemaPath;
 
-            var fileStream = new FileStream(path, FileMode.Open);
+                var fileStream = new FileStream(path, FileMode.Open);
 
-            var reader = new StreamReader(fileStream);
+                var reader = new StreamReader(fileStream);
 
-            var file = reader.ReadToEnd();
+                var file = reader.ReadToEnd();
 
-            reader.Close();
+                reader.Close();
 
-            return file;
+                return file;
+            }
+            catch (Exception exception)
+            {
+                throw new UtilsExceptions(Constants.ReadFileErrorMessage, exception);
+            }
         }
     }
 }

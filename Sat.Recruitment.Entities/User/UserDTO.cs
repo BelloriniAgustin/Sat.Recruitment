@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 
 namespace Sat.Recruitment.Entities
 {
@@ -16,6 +17,11 @@ namespace Sat.Recruitment.Entities
 
         public decimal Money { get; set; }
 
+        public override string ToString()
+        {
+            return string.Join(",", GetType().GetProperties().Select(prop => prop.GetValue(this).ToString()));
+        }
+
         public override bool Equals(object obj)
         {
             return obj is UserDTO userDTO && userDTO.GetHashCode() == GetHashCode();
@@ -23,7 +29,7 @@ namespace Sat.Recruitment.Entities
 
         public override int GetHashCode()
         {
-            return HashCode.Combine(Name, Email, Address, Phone, UserType, Money);
+            return HashCode.Combine(Name, Email, Address, Phone, UserType);
         }
     }
 }

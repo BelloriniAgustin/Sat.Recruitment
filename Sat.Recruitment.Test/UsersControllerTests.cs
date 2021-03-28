@@ -8,13 +8,13 @@ namespace Sat.Recruitment.Test
     [CollectionDefinition("Tests", DisableParallelization = true)]
     public class UsersControllerTests
     {
+        private readonly UsersController _usersController = new UsersController();
         private const string SchemaValidatorMinNameLength = "String '' is less than minimum length of 1. Path 'Name'.";
         private const string InvalidTypeArgException = "Invalid type (Parameter 'InvalidType')";
 
         [Fact]
         public void ShouldCreateNormalUser()
         {
-            var userController = new UsersController();
             var user = new UserDTO
             {
                 Name = "Mike",
@@ -25,7 +25,7 @@ namespace Sat.Recruitment.Test
                 Money = 124
             };
 
-            var result = userController.CreateUser(user);
+            var result = _usersController.CreateUser(user);
 
             AssertApiResponse(result, HttpStatusCode.OK, Constants.SuccessUserCreationMessage);
         }
@@ -33,7 +33,6 @@ namespace Sat.Recruitment.Test
         [Fact]
         public void ShouldCreatePremiumUser()
         {
-            var userController = new UsersController();
             var user = new UserDTO
             {
                 Name = "Test",
@@ -44,7 +43,7 @@ namespace Sat.Recruitment.Test
                 Money = 124
             };
 
-            var result = userController.CreateUser(user);
+            var result = _usersController.CreateUser(user);
 
             AssertApiResponse(result, HttpStatusCode.OK, Constants.SuccessUserCreationMessage);
         }
@@ -52,18 +51,17 @@ namespace Sat.Recruitment.Test
         [Fact]
         public void ShouldCreateSuperUser()
         {
-            var userController = new UsersController();
             var user = new UserDTO
             {
                 Name = "Test2",
                 Email = "mike@gmail.com",
                 Address = "Av. Juan G",
                 Phone = "+349 1122354215",
-                UserType = "Premium",
+                UserType = "SuperUser",
                 Money = 124
             };
 
-            var result = userController.CreateUser(user);
+            var result = _usersController.CreateUser(user);
 
             AssertApiResponse(result, HttpStatusCode.OK, Constants.SuccessUserCreationMessage);
         }
@@ -71,7 +69,6 @@ namespace Sat.Recruitment.Test
         [Fact]
         public void ShouldNotCreateDuplicatedUser()
         {
-            var userController = new UsersController();
             var user = new UserDTO
             {
                 Name = "Agustina",
@@ -82,7 +79,7 @@ namespace Sat.Recruitment.Test
                 Money = 112234
             };
 
-            var result = userController.CreateUser(user);
+            var result = _usersController.CreateUser(user);
 
             AssertApiResponse(result, HttpStatusCode.BadRequest, Constants.DuplicatedUserErrorMessage);
         }
@@ -90,7 +87,6 @@ namespace Sat.Recruitment.Test
         [Fact]
         public void ShouldNotCreateInvalidUserProperties()
         {
-            var userController = new UsersController();
             var user = new UserDTO
             {
                 Name = "",
@@ -101,7 +97,7 @@ namespace Sat.Recruitment.Test
                 Money = 124
             };
 
-            var result = userController.CreateUser(user);
+            var result = _usersController.CreateUser(user);
 
             AssertApiResponse(result, HttpStatusCode.BadRequest, SchemaValidatorMinNameLength);
         }
@@ -109,7 +105,6 @@ namespace Sat.Recruitment.Test
         [Fact]
         public void ShouldNotCreateInvalidUserType()
         {
-            var userController = new UsersController();
             var user = new UserDTO
             {
                 Name = "TestName",
@@ -120,7 +115,7 @@ namespace Sat.Recruitment.Test
                 Money = 124
             };
 
-            var result = userController.CreateUser(user);
+            var result = _usersController.CreateUser(user);
 
             AssertApiResponse(result, HttpStatusCode.InternalServerError, InvalidTypeArgException);
         }

@@ -10,23 +10,22 @@ namespace Sat.Recruitment.Api.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public partial class UsersController : ControllerBase
+    public class UsersController : ControllerBase
     {
-        private readonly List<UserDTO> _users = new List<UserDTO>();
-
+        private readonly IList<UserDTO> _users = new List<UserDTO>();
 
         public UsersController()
         {
-            _users = FileReader.ReadUsersFromFile();
+            _users = UsersFileHelper.ReadUsersFromFile();
         }
 
         [HttpPost]
-        [Route("/users")]
+        [Route("~/users")]
         public ApiResponse CreateUser([FromBody] UserDTO user)
         {
             try
             {
-                var responseMessage = "";
+                var responseMessage = string.Empty;
 
                 if (!Validator.IsValidUser(user, _users, ref responseMessage))
                 {

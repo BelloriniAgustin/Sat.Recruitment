@@ -12,10 +12,4 @@
     <ProjectReference Include="..\Sat.Recruitment.Entities\Sat.Recruitment.Entities.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <None Update="Files\UserSchema.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
-
 </Project>
