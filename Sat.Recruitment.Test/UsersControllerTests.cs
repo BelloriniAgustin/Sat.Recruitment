@@ -72,14 +72,14 @@ namespace Sat.Recruitment.Test
         public void ShouldNotCreateDuplicatedUser()
         {
             var userController = new UsersController();
-            var user = new Normal
+            var user = new SuperUser
             {
                 Name = "Agustina",
                 Email = "Agustina@gmail.com",
-                Address = "Av. Juan G",
-                Phone = "+349 1122354215",
-                UserType = "Normal",
-                Money = 124
+                Address = "Garay y Otra Calle",
+                Phone = "+534645213542",
+                UserType = "SuperUser",
+                Money = 112234
             };
 
             var result = userController.CreateUser(user);
@@ -107,7 +107,7 @@ namespace Sat.Recruitment.Test
 
 
             Assert.Equal(HttpStatusCode.BadRequest, result.StatusCode);
-            Assert.Equal("The name is required", result.Message);
+            Assert.Equal("String '' is less than minimum length of 1. Path 'Name'.", result.Message);
         }
     }
 }

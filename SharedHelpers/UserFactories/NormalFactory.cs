@@ -4,16 +4,16 @@ namespace Sat.Recruitment.Helpers.UserFactory
 {
     public class NormalFactory : UserFactory
     {
-        public override User CreateUser(string name, string email, string phone, string address, string userType, decimal money)
+        public override User CreateUser(UserDTO user)
         {
             return new Normal()
             {
-                Name = name,
-                Email = email,
-                Phone = phone,
-                Address = address,
-                UserType = userType,
-                Money = money
+                Name = user.Name,
+                Email = user.Email,
+                Phone = user.Phone,
+                Address = user.Address,
+                UserType = user.UserType,
+                Money = user.Money
             };
         }
     }

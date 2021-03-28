@@ -1,61 +1,39 @@
-﻿using Sat.Recruitment.Entities;
-using System;
+﻿using Newtonsoft.Json.Linq;
+using Newtonsoft.Json.Schema;
+using Sat.Recruitment.Entities;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 
 namespace Sat.Recruitment.Helpers
 {
     public static class Validator
     {
-        public static bool IsValidUser(User user, ref string errors)
+        public static bool IsValidUser(UserDTO user, List<UserDTO> users, ref string errors)
         {
-            if (string.IsNullOrEmpty(user.Name))
+            return UserHasValidProperties(user, ref errors) && !IsDuplicatedUser(user, users, ref errors);
+        }
+
+        public static bool UserHasValidProperties(UserDTO userDTO, ref string errors)
+        {
+            var userSchema = Utils.ReadFile("/Files/UserSchema.json");
+            var user = JObject.FromObject(userDTO);
+
+            if (!user.IsValid(JSchema.Parse(userSchema), out IList<string> errorMessages))
             {
-                //Validate if Name is null
-                errors = "The name is required";
-                return false;
-            }
-            if (string.IsNullOrEmpty(user.Email))
-            {
-                //Validate if Email is null
-                errors = " The email is required";
-                return false;
-            }
-            if (string.IsNullOrEmpty(user.Address))
-            {
-                //Validate if Address is null
-                errors = " The address is required";
-                return false;
-            }
-            if (string.IsNullOrEmpty(user.Phone))
-            {
-                //Validate if Phone is null
-                errors = " The phone is required";
+                errors = string.Join(", ", errorMessages);
                 return false;
             }
 
             return true;
         }
 
-        public static bool IsDuplicatedUser(User newUser, List<User> users, ref string errors)
+        public static bool IsDuplicatedUser(UserDTO newUser, List<UserDTO> users, ref string errors)
         {
-            foreach (var user in users)
+            if (users.Any(user => user.Equals(newUser)))
             {
-                if (user.Email == Utils.NormalizeEmail(newUser.Email)
-                    ||
-                    user.Phone == newUser.Phone)
-                {
-                    errors = "User is duplicated";
-                    return true;
-                }
-                else if (user.Name == newUser.Name)
-                {
-                    if (user.Address == newUser.Address)
-                    {
-                        errors = "User is duplicated";
-
-                        return true;
-                    }
-                }
+                errors = "User is duplicated";
+                return true;
             }
 
             return false;

@@ -3,14 +3,15 @@ using Sat.Recruitment.Helpers.UserFactory;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading.Tasks;
 
 namespace Sat.Recruitment.Helpers
 {
     public static class FileReader
     {
-        public static List<User> ReadUsersFromFile()
+        public static List<UserDTO> ReadUsersFromFile()
         {
-            var users = new List<User>();
+            var users = new List<UserDTO>();
 
             var path = Directory.GetCurrentDirectory() + "/Files/Users.txt";
 
@@ -20,27 +21,31 @@ namespace Sat.Recruitment.Helpers
 
             while (reader.Peek() >= 0)
             {
-                var line = reader.ReadLineAsync().Result;
-                var name = line.Split(',')[0].ToString();
-                var email = line.Split(',')[1].ToString();
-                var phone = line.Split(',')[2].ToString();
-                var address = line.Split(',')[3].ToString();
-                var userType = line.Split(',')[4].ToString();
-                var money = decimal.Parse(line.Split(',')[5].ToString());
+                var line = reader.ReadLine().Split(',');
 
-                switch (userType)
+                var userDTO = new UserDTO()
+                {
+                    Name = line[0].ToString(),
+                    Email = line[1].ToString(),
+                    Phone = line[2].ToString(),
+                    Address = line[3].ToString(),
+                    UserType = line[4].ToString(),
+                    Money = decimal.Parse(line[5].ToString())
+                };
+
+                switch (userDTO.UserType)
                 {
                     case "Normal":
-                        users.Add(new NormalFactory().CreateUser(name, email, phone, address, userType, money));
+                        users.Add(new NormalFactory().CreateUser(userDTO));
                         break;
                     case "SuperUser":
-                        users.Add(new SuperUserFactory().CreateUser(name, email, phone, address, userType, money));
+                        users.Add(new SuperUserFactory().CreateUser(userDTO));
                         break;
                     case "Premium":
-                        users.Add(new PremiumFactory().CreateUser(name, email, phone, address, userType, money));
+                        users.Add(new PremiumFactory().CreateUser(userDTO));
                         break;
                     default:
-                        throw new ArgumentException("Invalid type", userType);
+                        throw new ArgumentException("Invalid type", userDTO.UserType);
                 }
             }
 
