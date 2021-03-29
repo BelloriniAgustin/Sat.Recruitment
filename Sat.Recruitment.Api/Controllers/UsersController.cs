@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using Sat.Recruitment.Entities;
 using Sat.Recruitment.Helpers;
 using Sat.Recruitment.Helpers.UserFactories;
@@ -26,7 +27,7 @@ namespace Sat.Recruitment.Api.Controllers
         {
             try
             {
-                Log.Information("Create user method triggered by: {0}", user.ToString());
+                Log.Information("Create user method triggered by: {0}", JsonConvert.SerializeObject(user));
 
                 var responseMessage = string.Empty;
 
@@ -45,7 +46,7 @@ namespace Sat.Recruitment.Api.Controllers
 
                 newUser.ApplyGift();
 
-                Log.Information("User created: {0}", newUser.ToString());
+                Log.Information("User created: {0}", JsonConvert.SerializeObject(newUser));
 
                 return new ApiResponse()
                 {

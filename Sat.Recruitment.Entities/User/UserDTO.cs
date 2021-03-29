@@ -17,11 +17,6 @@ namespace Sat.Recruitment.Entities
 
         public decimal Money { get; set; }
 
-        public override string ToString()
-        {
-            return string.Join(",", GetType().GetProperties().Select(prop => prop.GetValue(this).ToString()));
-        }
-
         public override bool Equals(object obj)
         {
             return obj is UserDTO userDTO && userDTO.GetHashCode() == GetHashCode();
