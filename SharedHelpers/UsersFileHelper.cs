@@ -1,6 +1,7 @@
 ﻿using Sat.Recruitment.Entities;
 using Sat.Recruitment.Helpers.Exceptions;
 using Sat.Recruitment.Helpers.UserFactories;
+using Serilog;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -14,12 +15,11 @@ namespace Sat.Recruitment.Helpers
             try
             {
                 var users = new List<UserDTO>();
-
                 var path = Directory.GetCurrentDirectory() + Constants.UsersFilePath;
-
                 var fileStream = new FileStream(path, FileMode.Open);
-
                 var reader = new StreamReader(fileStream);
+
+                Log.Information("Reading users file");
 
                 while (reader.Peek() >= 0)
                 {
@@ -40,10 +40,14 @@ namespace Sat.Recruitment.Helpers
 
                 reader.Close();
 
+                Log.Information("Users successfully read");
+
                 return users;
             }
             catch (Exception exception)
             {
+                Log.Error("Exception reading file. Exception: {0}", exception.Message);
+
                 throw new UsersFileHelperExceptions(Constants.ErrorReadingUsersFileMessage, exception);
             }
         }

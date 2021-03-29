@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Schema;
 using Sat.Recruitment.Entities;
+using Serilog;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -21,6 +22,9 @@ namespace Sat.Recruitment.Helpers
             if (!user.IsValid(JSchema.Parse(userSchema), out IList<string> errorMessages))
             {
                 errors = string.Join(", ", errorMessages);
+                
+                Log.Information("User has invalid properties. Error message: {errors}");
+                
                 return false;
             }
 
@@ -33,6 +37,8 @@ namespace Sat.Recruitment.Helpers
         {
             if (users.Any(user => user.Equals(newUser)))
             {
+                Log.Information("User is duplicated");
+
                 errors = Constants.DuplicatedUserErrorMessage;
                 return true;
             }

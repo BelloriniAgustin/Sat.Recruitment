@@ -1,8 +1,8 @@
 ﻿namespace Sat.Recruitment.Entities
 {
-    public class Constants
+    public static class Constants
     {
-        public const string SuccessUserCreationMessage = "User successfully created";
+        public const string SuccessUserCreationMessage = "User successfully created. Total money: {0}";
 
         public const string InvalidUserDefaultMessage = "Ivalid user";
 

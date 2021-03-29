@@ -1,4 +1,5 @@
 ﻿using Sat.Recruitment.Entities;
+using Serilog;
 using System;
 using System.Collections.Generic;
 
@@ -13,8 +14,6 @@ namespace Sat.Recruitment.Helpers.UserFactories
                 { Constants.UserTypePremium, new PremiumFactory() }
             };
 
-        public abstract User CreateConcreteUser(UserDTO user);
-
         public static User CreateUser(UserDTO user)
         {
             if (_userTypeFactories.TryGetValue(user.UserType, out var factory))
@@ -23,8 +22,12 @@ namespace Sat.Recruitment.Helpers.UserFactories
             } 
             else
             {
+                Log.Error("Error while creating user");
+
                 throw new ArgumentException(Constants.InvalidUserTypeMessage, user.UserType);
             }
         }
+
+        public abstract User CreateConcreteUser(UserDTO user);
     }
 }

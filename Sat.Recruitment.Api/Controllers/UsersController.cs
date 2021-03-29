@@ -2,6 +2,7 @@
 using Sat.Recruitment.Entities;
 using Sat.Recruitment.Helpers;
 using Sat.Recruitment.Helpers.UserFactories;
+using Serilog;
 using System;
 using System.Collections.Generic;
 using System.Net;
@@ -25,6 +26,8 @@ namespace Sat.Recruitment.Api.Controllers
         {
             try
             {
+                Log.Information("Create user method triggered by: {0}", user.ToString());
+
                 var responseMessage = string.Empty;
 
                 if (!Validator.IsValidUser(user, _users, ref responseMessage))
@@ -36,18 +39,24 @@ namespace Sat.Recruitment.Api.Controllers
                     };
                 }
 
+                Log.Information("User is valid");
+
                 var newUser = UserFactory.CreateUser(user);
 
                 newUser.ApplyGift();
 
+                Log.Information("User created: {0}", newUser.ToString());
+
                 return new ApiResponse()
                 {
                     StatusCode = HttpStatusCode.OK,
-                    Message = Constants.SuccessUserCreationMessage
+                    Message = string.Format(Constants.SuccessUserCreationMessage, newUser.Money)
                 };
             }
             catch (Exception exception)
             {
+                Log.Error("Exception found: {0}", exception.Message);
+
                 return new ApiResponse()
                 {
                     StatusCode = HttpStatusCode.InternalServerError,

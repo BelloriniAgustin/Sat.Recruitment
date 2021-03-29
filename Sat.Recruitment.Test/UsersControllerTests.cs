@@ -12,63 +12,30 @@ namespace Sat.Recruitment.Test
         private const string SchemaValidatorMinNameLength = "String '' is less than minimum length of 1. Path 'Name'.";
         private const string InvalidTypeArgException = "Invalid type (Parameter 'InvalidType')";
 
-        [Fact]
-        public void ShouldCreateNormalUser()
+        [Theory]
+        [InlineData(Constants.UserTypePremium, 50, "50")]
+        [InlineData(Constants.UserTypePremium, 124, "372")]
+        [InlineData(Constants.UserTypeNormal, 50, "90.0")]
+        [InlineData(Constants.UserTypeNormal, 5, "5")]
+        [InlineData(Constants.UserTypeNormal, 124, "138.88")]
+        [InlineData(Constants.UserTypeSuperUser, 124, "148.8")]
+        [InlineData(Constants.UserTypeSuperUser, 50, "50")]
+        public void CreateUserReturnsOkTheory(string userType, decimal money, string expectedMoney)
         {
-            var user = new UserDTO
-            {
-                Name = "Mike",
-                Email = "mike@gmail.com",
-                Address = "Av. Juan G",
-                Phone = "+349 1122354215",
-                UserType = "Normal",
-                Money = 124
-            };
+            // Arrange
+            var user = GetUserDTO(userType, money);
 
+            // Act
             var result = _usersController.CreateUser(user);
 
-            AssertApiResponse(result, HttpStatusCode.OK, Constants.SuccessUserCreationMessage);
+            // Assert
+            AssertApiResponse(result, HttpStatusCode.OK, string.Format(Constants.SuccessUserCreationMessage, expectedMoney));
         }
 
         [Fact]
-        public void ShouldCreatePremiumUser()
+        public void CreateDuplicatedUserReturnsBadRequest()
         {
-            var user = new UserDTO
-            {
-                Name = "Test",
-                Email = "mike@gmail.com",
-                Address = "Av. Juan G",
-                Phone = "+349 1122354215",
-                UserType = "Premium",
-                Money = 124
-            };
-
-            var result = _usersController.CreateUser(user);
-
-            AssertApiResponse(result, HttpStatusCode.OK, Constants.SuccessUserCreationMessage);
-        }
-
-        [Fact]
-        public void ShouldCreateSuperUser()
-        {
-            var user = new UserDTO
-            {
-                Name = "Test2",
-                Email = "mike@gmail.com",
-                Address = "Av. Juan G",
-                Phone = "+349 1122354215",
-                UserType = "SuperUser",
-                Money = 124
-            };
-
-            var result = _usersController.CreateUser(user);
-
-            AssertApiResponse(result, HttpStatusCode.OK, Constants.SuccessUserCreationMessage);
-        }
-
-        [Fact]
-        public void ShouldNotCreateDuplicatedUser()
-        {
+            // Arrange
             var user = new UserDTO
             {
                 Name = "Agustina",
@@ -79,45 +46,50 @@ namespace Sat.Recruitment.Test
                 Money = 112234
             };
 
+            // Act
             var result = _usersController.CreateUser(user);
 
+            // Assert
             AssertApiResponse(result, HttpStatusCode.BadRequest, Constants.DuplicatedUserErrorMessage);
         }
 
         [Fact]
-        public void ShouldNotCreateInvalidUserProperties()
+        public void CreateInvalidUserPropertiesReturnsBadRequest()
         {
-            var user = new UserDTO
-            {
-                Name = "",
-                Email = "Agustina@gmail.com",
-                Address = "Av. Juan G",
-                Phone = "+349 1122354215",
-                UserType = "Normal",
-                Money = 124
-            };
+            // Arrange
+            var user = GetUserDTO("Normal", 124, "");
 
+            // Act
             var result = _usersController.CreateUser(user);
 
+            // Assert
             AssertApiResponse(result, HttpStatusCode.BadRequest, SchemaValidatorMinNameLength);
         }
 
         [Fact]
-        public void ShouldNotCreateInvalidUserType()
+        public void CreateInvalidUserTypeReturnsServerError()
         {
-            var user = new UserDTO
-            {
-                Name = "TestName",
-                Email = "Agustina@gmail.com",
-                Address = "Av. Juan G",
-                Phone = "+349 1122354215",
-                UserType = "InvalidType",
-                Money = 124
-            };
+            // Arrange
+            var user = GetUserDTO("InvalidType", 124);
 
+            // Act
             var result = _usersController.CreateUser(user);
 
+            // Assert
             AssertApiResponse(result, HttpStatusCode.InternalServerError, InvalidTypeArgException);
+        }
+        
+        private static UserDTO GetUserDTO(string userType, decimal money, string name = "Mike")
+        {
+            return new UserDTO
+            {
+                Name = name,
+                Email = "mike@gmail.com",
+                Address = "Av. Juan G",
+                Phone = "+349 1122354215",
+                UserType = userType,
+                Money = money
+            };
         }
 
         private static void AssertApiResponse(ApiResponse result, HttpStatusCode statusCode, string message)
