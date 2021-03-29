@@ -4,7 +4,7 @@
     {
         public const string SuccessUserCreationMessage = "User successfully created. Total money: {0}";
 
-        public const string InvalidUserDefaultMessage = "Ivalid user";
+        public const string InvalidUserDefaultMessage = "Invalid user";
 
         public const string DuplicatedUserErrorMessage = "User is duplicated";
 
